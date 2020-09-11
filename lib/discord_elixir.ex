@@ -3,16 +3,18 @@ defmodule DiscordElixir do
   Documentation for DiscordElixir.
   """
 
-  @doc """
-  Hello world.
+  def start(_type, _args) do
+    import Supervisor.Spec
 
-  ## Examples
+    children = [
+      worker(DiscordElixir.Manager.Worker, [%{
+        handler: DiscordElixir.Manager.Worker,
+        token: Application.get_env(:discord_elixir, :token)
+      }])
+    ]
 
-      iex> DiscordElixir.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    opts = [strategy: :one_for_one, name: DiscordElixir.Supervisor]
+    Supervisor.start_link(children, opts)
   end
+
 end
